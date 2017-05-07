@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>#100днейкода ПУ</title>
+</head>
+
+<body>
+	<h1>Панель управления:</h1>
+	
+	<p><button class="control" onclick="up()" value="down">Вверх</button></p>
+	<p><button class="control" onclick="left()" value="down">Влево</button>
+	<button class="control" onclick="right()" value="right">Вправо</button></p>
+	<p><button class="control" onclick="down()" value="down">Вниз</button></p>
+	
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+		var socket = io.connect()
+		function right(){
+			socket.emit('sockets','right');
+			return false;
+		}
+		function down(){
+			socket.emit('sockets','down');
+			return false;
+		}
+		function left(){
+			socket.emit('sockets','left');
+			return false;
+		}
+		function up(){
+			socket.emit('sockets','up');
+			return false;
+		}
+	</script>
+</body>
+
+</html>

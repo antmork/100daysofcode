@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="/stylesheets/main.css" />
+<title>#100днейкода Canvas</title>
+</head>
+<body>
+	<canvas id="c1" width="500" height="500" class="day20canvas">
+		socket_canvas
+	</canvas>
+
+	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+	<script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
+	<script>
+	var socket = io.connect();
+
+	var stage = new createjs.Stage("c1");
+	//var sprite = new createjs.Bitmap("http://www.deltacomputers.net.au/wp-content/themes/Kilombo-resp-3/images/apple-icon.png");
+	var data = {
+		images: ["http://www.deltacomputers.net.au/wp-content/themes/Kilombo-resp-3/images/apple-icon.png"],
+		frames: {width: 50, height:50}
+	}
+	
+	var spriteSheet = new createjs.SpriteSheet(data);
+	var sprite = new createjs.Sprite(spriteSheet, 0);
+	
+	sprite.x = stage.canvas.width/2 - data.frames.width/2;
+	sprite.y = stage.canvas.height/2 - data.frames.height/2
+    stage.addChild(sprite);
+	stage.update();
+	
+	socket.on('sockets', function(msg) {
+		switch (msg) {		
+			case 'right':
+				sprite.x += 10;
+				if(sprite.x > stage.canvas.width) sprite.x = 0;
+				stage.update();
+				break;
+			case 'down':
+				sprite.y += 10;
+				if(sprite.y > stage.canvas.height) sprite.y = 0;
+				stage.update();
+				break;
+			case 'up':
+				sprite.y -= 10;
+				if(sprite.y < 0) sprite.y = stage.canvas.height;
+				stage.update();
+				break;	
+			case 'left':
+				sprite.x -= 10;
+				if(sprite.x < 0) sprite.x = stage.canvas.width;
+				stage.update();
+				break;				
+		}
+	});
+	createjs.Ticker.setFPS(60);
+	createjs.Ticker.addEventListener("tick", stage);
+	</script>
+</body>
+
+</html>

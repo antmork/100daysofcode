@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="/stylesheets/main.css" />
+<title>#100днейкода Canvas</title>
+</head>
+<body>
+	<canvas id="c1" width="500" height="500" class="day21canvas">
+		socket_canvas
+	</canvas>
+
+	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+	<script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
+	<script>
+	var socket = io(location.origin);
+	var stage = new createjs.Stage("c1");
+	
+	var sprite_arr = [];
+	
+	socket.on('sockets_21', function(data) {
+		switch (data.command) {
+			case 'connect':		
+				var sprite = new createjs.Bitmap("/img/apple-icon.png");
+				sprite.x = stage.canvas.width/2 - 25;
+				sprite.y = stage.canvas.height/2 - 25;
+				stage.addChild(sprite);
+		
+				sprite_arr[data.socket_id] = sprite;
+				stage.update();
+				break;
+			case 'right':
+				sprite_arr[data.socket_id].x += 10;
+				if(sprite_arr[data.socket_id].x > stage.canvas.width) sprite_arr[data.socket_id].x = 0;
+				stage.update();
+				break;
+			case 'down':
+				sprite_arr[data.socket_id].y += 10;
+				if(sprite_arr[data.socket_id].y > stage.canvas.height) sprite_arr[data.socket_id].y = 0;
+				stage.update();
+				break;
+			case 'up':
+				sprite_arr[data.socket_id].y -= 10;
+				if(sprite_arr[data.socket_id].y < 0) sprite_arr[data.socket_id].y = stage.canvas.height;
+				stage.update();
+				break;	
+			case 'left':
+				sprite_arr[data.socket_id].x -= 10;
+				if(sprite_arr[data.socket_id].x < 0) sprite_arr[data.socket_id].x = stage.canvas.width;
+				stage.update();
+				break;				
+		}	
+	});
+	createjs.Ticker.setFPS(60);
+	createjs.Ticker.addEventListener("tick", stage);
+	</script>
+</body>
+
+</html>
