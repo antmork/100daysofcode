@@ -19,6 +19,19 @@ io.on('connection', function(socket){
 		data.socket_id = socket.id;
 		io.emit('sockets_21', data);
 	});
+	
+	socket.on('sockets_22', function(data){
+		data.socket_id = socket.id;
+		io.emit('sockets_22', data);
+	});
+	socket.on('sockets_22_x', function(data_x){
+		data_x.socket_id = socket.id;
+		io.emit('sockets_22_x', data_x);
+	});
+	socket.on('sockets_22_y', function(data_y){
+		data_y.socket_id = socket.id;
+		io.emit('sockets_22_y', data_y);
+	});
 });
 
 http.listen(port, function(){
