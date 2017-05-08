@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>#100днейкода ПУ</title>
+<link rel="stylesheet" type="text/css" href="/stylesheets/main.css" />
+</head>
+
+<body>
+	<h1>Панель управления:</h1>
+	
+	<p><button class="control" onclick="{this.disabled='disabled'; sendCommand('connect')}" value="connect">Подключиться</button></p>
+	<canvas id="cc1" width="500" height="500" class="day22canvas">
+		control_canvas
+	</canvas>
+	
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+	<script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
+    <script>
+		var socket = io.connect();
+		function sendCommand(command) {
+			socket.emit('sockets_22', {command: command});
+		}
+		function sendX(command) {
+			socket.emit('sockets_22_x', {command: command});
+		}
+		function sendY(command) {
+			socket.emit('sockets_22_y', {command: command});
+		}
+		
+		var stage = new createjs.Stage("cc1");
+		var sprite = new createjs.Bitmap("/img/apple-icon.png");
+		
+
+		stage.on("stagemousemove", function(evt) {
+			sprite.x = evt.stageX - 25;
+			sprite.y = evt.stageY  - 25;
+			sendCommand('update');
+			sendX(sprite.x);
+			sendY(sprite.y);
+			stage.addChild(sprite);
+			stage.update(); 
+		});
+		
+		createjs.Ticker.setFPS(60);
+		createjs.Ticker.addEventListener("tick", stage);
+	</script>
+</body>
+
+</html>

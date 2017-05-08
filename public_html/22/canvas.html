@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="/stylesheets/main.css" />
+<title>#100днейкода Canvas</title>
+</head>
+<body>
+	<canvas id="c1" width="500" height="500" class="day21canvas">
+		socket_canvas
+	</canvas>
+
+	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+	<script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
+	<script>
+	var socket = io(location.origin);
+	var stage = new createjs.Stage("c1");
+	
+	var sprite_arr = [];
+	
+	socket.on('sockets_22', function(data) {
+		switch (data.command) {
+			case 'connect':		
+				var sprite = new createjs.Bitmap("/img/apple-icon.png");
+				sprite.x = stage.canvas.width/2 - 25;
+				sprite.y = stage.canvas.height/2 - 25;
+				stage.addChild(sprite);
+		
+				sprite_arr[data.socket_id] = sprite;
+				stage.update();
+				break;
+			case 'update':
+				socket.on('sockets_22_x', function(data_x) {
+					sprite_arr[data_x.socket_id].x = data_x.command;
+				});
+				socket.on('sockets_22_y', function(data_y) {
+					sprite_arr[data_y.socket_id].y = data_y.command;
+				});
+				stage.update();
+				break;
+		}	
+	});
+	createjs.Ticker.setFPS(60);
+	createjs.Ticker.addEventListener("tick", stage);
+	</script>
+</body>
+
+</html>
