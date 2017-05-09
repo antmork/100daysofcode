@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="/stylesheets/main.css" />
+<title>#100днейкода Canvas</title>
+</head>
+<body>
+	<canvas id="c1" width="500" height="500" class="day23canvas">
+		socket_canvas
+	</canvas>
+
+	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+	<script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
+	<script>
+	var socket = io(location.origin);
+	var stage = new createjs.Stage("c1");
+	
+	var circle_arr = [];
+	
+	socket.on('sockets_23', function(data) {
+		switch (data.command) {
+			case 'connect':		
+				var circle = new createjs.Shape();
+				circle_arr[data.socket_id] = circle;
+				socket.on('sockets_23_r', function(data_r) {	
+					socket.on('sockets_23_col', function(data_col) {	
+						circle_arr[data_r.socket_id].graphics.beginStroke(data_col.command).drawCircle(0, 0, data_r.command);
+					});
+				});
+				circle_arr[data.socket_id].x = stage.canvas.width/2;
+				circle_arr[data.socket_id].y = stage.canvas.height/2;
+				stage.addChild(circle_arr[data.socket_id]);
+				
+				stage.update();
+				break;
+			case 'update':
+				socket.on('sockets_23_x', function(data_x) {
+					circle_arr[data_x.socket_id].x = data_x.command;
+				});
+				socket.on('sockets_23_y', function(data_y) {
+					circle_arr[data_y.socket_id].y = data_y.command;
+				});
+				stage.update();
+				break;
+		}	
+	});
+	createjs.Ticker.setFPS(60);
+	createjs.Ticker.addEventListener("tick", stage);
+	</script>
+</body>
+
+</html>

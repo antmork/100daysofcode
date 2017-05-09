@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>#100днейкода ПУ</title>
+<link rel="stylesheet" type="text/css" href="/stylesheets/main.css" />
+</head>
+
+<body>
+	<h1>Панель управления:</h1>
+	
+	<p><button class="control" onclick="{this.disabled='disabled'; sendCommand('connect'); sendR(radius); sendCol(color);}" value="connect">Подключиться</button></p>
+	<canvas id="cc1" width="500" height="500" class="day23canvas">
+		control_canvas
+	</canvas>
+	
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+	<script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
+    <script>
+		var colors = ["AliceBlue","AntiqueWhite","Aqua","Aquamarine","Azure","Beige","Bisque","Black","BlanchedAlmond","Blue","BlueViolet","Brown",
+				  "BurlyWood","CadetBlue","Chartreuse","Chocolate","Coral","CornflowerBlue","Cornsilk","Crimson","Cyan","DeepPink","DeepSkyBlue",
+				  "DimGray","DimGrey","DodgerBlue","FireBrick","FloralWhite","ForestGreen","Fuchsia","Gainsboro","GhostWhite","Gold","GoldenRod",
+				  "Gray","Grey","Green","GreenYellow","HoneyDew","HotPink","IndianRed","Indigo","Ivory","Khaki","Lavender","LavenderBlush","LawnGreen",
+				  "LemonChiffon","Lime","LimeGreen","Linen","Magenta","Maroon","MidnightBlue","MintCream","MistyRose","Moccasin","NavajoWhite","Navy","OldLace",
+				  "Olive","OliveDrab","Orange","OrangeRed","Orchid","PaleGoldenRod","PaleGreen","PaleTurquoise","PaleVioletRed","PapayaWhip","PeachPuff","Peru",
+				  "Pink","Plum","PowderBlue","Purple","Red","RosyBrown","RoyalBlue","SaddleBrown","Salmon","SandyBrown","SeaGreen","SeaShell","Sienna","Silver",
+				  "SkyBlue","SlateBlue","SlateGray","SlateGrey","Snow","SpringGreen","SteelBlue","Tan","Teal","Thistle","Tomato","Turquoise","Violet","Wheat",
+				  "Yellow","YellowGreen"];
+		function getRandomInt(min, max)
+		{
+			return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+		
+		var socket = io.connect();
+		function sendCommand(command) {
+			socket.emit('sockets_23', {command: command});
+		}
+		function sendX(command) {
+			socket.emit('sockets_23_x', {command: command});
+		}
+		function sendY(command) {
+			socket.emit('sockets_23_y', {command: command});
+		}
+		function sendR(command) {
+			socket.emit('sockets_23_r', {command: command});
+		}
+		function sendCol(command) {
+			socket.emit('sockets_23_col', {command: command});
+		}
+		
+		var stage = new createjs.Stage("cc1");
+		var circle = new createjs.Shape();
+		var radius = getRandomInt(10, 100);
+		var color_num = getRandomInt(0, colors.length);
+		var color = colors[color_num];
+		circle.graphics.beginStroke(color).drawCircle(0, 0, radius);
+
+		stage.on("stagemousemove", function(evt) {
+			circle.x = evt.stageX;
+			circle.y = evt.stageY;
+			sendCommand('update');
+			sendX(circle.x);
+			sendY(circle.y);
+			stage.addChild(circle);
+			stage.update(); 
+		});
+		
+		createjs.Ticker.setFPS(60);
+		createjs.Ticker.addEventListener("tick", stage);
+	</script>
+</body>
+
+</html>
