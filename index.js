@@ -53,6 +53,31 @@ io.on('connection', function(socket){
 		data_col.socket_id = socket.id;
 		io.emit('sockets_23_col', data_col);
 	});
+	
+	socket.emit('24_command_listen', array_sprites);
+    socket.broadcast.emit('24_command_listen', array_sprites);
+    socket.on('24_command_send', function (data) {
+        if (socket.id in array_sprites) {
+			array_sprites[socket.id].x = data.x;
+            array_sprites[socket.id].y = data.y;
+            array_sprites[socket.id].color = data.color;
+            array_sprites[socket.id].radius = data.radius;
+        } else {
+            array_sprites[socket.id] = {
+                x: 40,
+                y: 40,
+				color: 'red',
+				radius: 50
+            };
+        }
+
+        socket.broadcast.emit('24_command_listen', array_sprites);
+    });
+
+    socket.on('disconnect', function(){
+        delete array_sprites[socket.id];
+        socket.broadcast.emit('24_command_listen', array_sprites);
+    });
 });
 
 http.listen(port, function(){
