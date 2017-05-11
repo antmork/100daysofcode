@@ -55,25 +55,17 @@ io.on('connection', function(socket){
 	});
 	
 	socket.emit('24_command_listen', array_sprites);
-    socket.broadcast.emit('24_command_listen', array_sprites);
-    socket.on('24_command_send', function (data) {
-        if (socket.id in array_sprites) {
-			array_sprites[socket.id].x = data.x;
-            array_sprites[socket.id].y = data.y;
-            array_sprites[socket.id].color = data.color;
-            array_sprites[socket.id].radius = data.radius;
-        } else {
-            array_sprites[socket.id] = {
-                x: 40,
-                y: 40,
-				color: 'red',
-				radius: 50
-            };
-        }
-
-        socket.broadcast.emit('24_command_listen', array_sprites);
-    });
-
+    	socket.on('24_command_send', function (data) {
+        	array_sprites[socket.id] = data;
+		socket.broadcast.emit('24_command_listen', array_sprites);
+    	});
+	
+	socket.emit('25_command_listen', array_sprites);
+    	socket.on('25_command_send', function (data) {
+        	array_sprites[socket.id] = data;
+		socket.broadcast.emit('25_command_listen', array_sprites);
+    	});
+	
     socket.on('disconnect', function(){
         delete array_sprites[socket.id];
         socket.broadcast.emit('24_command_listen', array_sprites);
