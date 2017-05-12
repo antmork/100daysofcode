@@ -65,7 +65,35 @@ io.on('connection', function(socket){
         	array_sprites[socket.id] = data;
 		socket.broadcast.emit('25_command_listen', array_sprites);
     	});
-	
+	client.emit('users base', users, users26);
+	client.emit('user connected', client.id);
+	client.on('user done26', function(color, size, x, y){
+		users26[client.id] = {
+		  color: color,
+		  size: size,
+		  x: x,
+		  y: y
+		}
+		client.broadcast.emit('user done26', x, y, color, size, client.id, users26)
+	});
+	client.on('user done', function(coordx, coordy, ID, color, size){
+		users[client.id] = {
+		  x: coordx,
+		  y: coordy,
+		  Id: ID,
+		  color: color,
+		  size: size
+		}
+		io.sockets.emit('user done', coordx, coordy, ID, color, size)
+		client.broadcast.emit('user done26', coordx, coordy, ID, color, size)
+	});
+	client.on('move done', function(obj, ID){
+		client.broadcast.emit('sprite change coord25', obj, users[ID].color, users[ID].size);
+		client.broadcast.emit('sprite change coord',  ID,  obj);
+		client.emit('move done', ID, obj);
+		users[client.id].x =  obj.x;
+		users[client.id].y =  obj.y;
+	});
     socket.on('disconnect', function(){
         delete array_sprites[socket.id];
         socket.broadcast.emit('24_command_listen', array_sprites);
