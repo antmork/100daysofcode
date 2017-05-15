@@ -94,6 +94,14 @@ io.on('connection', function(socket){
 		users[client.id].x =  obj.x;
 		users[client.id].y =  obj.y;
 	});
+	
+	socket.emit('29_command_listen', array_sprites);
+    
+    socket.on('29_command_send', function (data) {
+        array_sprites[socket.id] = data;
+		socket.broadcast.emit('29_command_listen', array_sprites);
+    });
+	
     socket.on('disconnect', function(){
         delete array_sprites[socket.id];
         socket.broadcast.emit('24_command_listen', array_sprites);
