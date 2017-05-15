@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/main.css" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>Canvas</title>
+</head>
+
+<body>
+
+	<canvas id="canvas" class="day24canvas">
+		alternate content
+	</canvas>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
+	
+    <script>
+    var socket = io(location.origin);
+    
+	var stage = new createjs.Stage("canvas");
+	
+    var circle = new createjs.Shape();
+    var radius = getRandomInt(10, 100);
+    var color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
+    circle.graphics.beginFill(color).drawCircle(0, 0, radius);
+    circle.x = 100;
+    circle.y = 100;
+    stage.addChild(circle);
+    socket.emit('29_command_send', {x: circle.x, y: circle.y, radius: radius, color: color});
+
+    setTimeout(function () {
+        stage.update();
+    }, 1)
+
+    circle.on("pressmove", function(evt) {
+        evt.target.x = evt.stageX;
+        evt.target.y = evt.stageY;
+        stage.update();
+        socket.emit('29_command_send', {x: evt.stageX, y: evt.stageY, radius: radius, color: color});
+    });
+
+    socket.on('29_command_listen', function (data) {
+        console.log(socket.id);
+        stage.removeAllChildren();
+        stage.addChild(circle);
+        for (var key in data) {
+            if(key !== socket.id) {
+                var circle = new createjs.Shape();
+                var radius = data[key].radius;
+                var color = data[key].color;
+                circle.graphics.beginStroke(color).drawCircle(0, 0, radius);
+                circle.x = data[key].x;
+                circle.y = data[key].y;
+                stage.addChild(circle);
+            }
+        }
+
+        setTimeout(function () {
+            stage.update();
+        }, 1)
+    });
+
+    function getRandomInt(min, max)
+	{
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+	</script>
+</body>
+
+</html>
